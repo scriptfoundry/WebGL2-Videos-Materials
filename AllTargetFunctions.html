@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebGL 2 targets and functions</title>
+    <style>
+        * {
+            font-family: "Asap Condensed";
+        }
+
+        body {
+            display: block;
+        }
+
+        body>div {
+            display: block;
+            margin: 0 auto;
+            max-width: 40em;
+        }
+
+        h2,
+        ul,
+        li {
+            padding: 0;
+            margin: 0;
+            border: 0;
+        }
+
+        h1,
+        h2 {
+            font-weight: lighter;
+        }
+
+        h1 {
+            margin-top: 2em;
+            font-size: 1.8em;
+        }
+
+        h2 {
+            font-size: 1.2em;
+        }
+
+        ul {
+            margin-bottom: 1em;
+        }
+
+        li {
+            display: inline-block;
+            border: 1px solid #666;
+            position: relative;
+            width: auto;
+            margin: .25em .25em .25em 0;
+            padding: .5em;
+            border-radius: .25em;
+            background-color: red;
+        }
+        .target-list li::after { content: '( )'; }
+        .function-list h2::after { content: '( )'; }
+
+        li.ARRAY_BUFFER {
+            background-color: #f58231;
+        }
+
+        li.COPY_READ_BUFFER {
+            background-color: #3cb44b;
+        }
+
+        li.COPY_WRITE_BUFFER {
+            background-color: rgb(255, 186, 122);
+        }
+
+        li.ELEMENT_ARRAY_BUFFER {
+            background-color: #ffe119;
+        }
+
+        li.PIXEL_PACK_BUFFER {
+            background-color: #bfef45;
+        }
+
+        li.PIXEL_UNPACK_BUFFER {
+            background-color: #2a8035;
+            color: #fff;
+        }
+
+        li.TRANSFORM_FEEDBACK_BUFFER {
+            background-color: #42d4f4;
+        }
+
+        li.UNIFORM_BUFFER {
+            background-color: #4363d8;
+            color: #fff;
+        }
+
+        li.TEXTURE_2D {
+            background-color: #911eb4;
+            color: #fff;
+        }
+
+        li.TEXTURE_3D {
+            background-color: #8f1d89;
+            color: #fff;
+        }
+
+        li.TEXTURE_2D_ARRAY {
+            background-color: #f35eec;
+        }
+
+        li.TEXTURE_CUBE_MAP {
+            background-color: #ffd8b1;
+        }
+
+        li.GL_FRAMEBUFFER {
+            background-color: #aaffc3;
+        }
+
+        li.READ_FRAMEBUFFER {
+            background-color: #dcbeff;
+        }
+
+        li.DRAW_FRAMEBUFFER {
+            background-color: #a9a9a9;
+        }
+
+        li.RENDERBUFFER {
+            background-color: rgb(88, 54, 54);
+            color: #ccc;
+        }
+
+        li.TRANSFORM_FEEDBACK {
+            background-color: rgb(177, 175, 196);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const targetsByFunc = {
+            bindBuffer: [
+                'ARRAY_BUFFER',
+                'COPY_READ_BUFFER',
+                'COPY_WRITE_BUFFER',
+                'ELEMENT_ARRAY_BUFFER',
+                'PIXEL_PACK_BUFFER',
+                'PIXEL_UNPACK_BUFFER',
+                'TRANSFORM_FEEDBACK_BUFFER',
+                'UNIFORM_BUFFER'
+            ],
+            bufferData: [
+                'ARRAY_BUFFER',
+                'COPY_READ_BUFFER',
+                'COPY_WRITE_BUFFER',
+                'ELEMENT_ARRAY_BUFFER',
+                'PIXEL_PACK_BUFFER',
+                'PIXEL_UNPACK_BUFFER',
+                'TRANSFORM_FEEDBACK_BUFFER',
+                'UNIFORM_BUFFER'
+            ],
+            bufferSubData: [
+                'ARRAY_BUFFER',
+                'COPY_READ_BUFFER',
+                'COPY_WRITE_BUFFER',
+                'ELEMENT_ARRAY_BUFFER',
+                'PIXEL_PACK_BUFFER',
+                'PIXEL_UNPACK_BUFFER',
+                'TRANSFORM_FEEDBACK_BUFFER',
+                'UNIFORM_BUFFER'
+            ],
+            copyBufferSubData: [
+                'ARRAY_BUFFER',
+                'COPY_READ_BUFFER',
+                'COPY_WRITE_BUFFER',
+                'ELEMENT_ARRAY_BUFFER',
+                'PIXEL_PACK_BUFFER',
+                'PIXEL_UNPACK_BUFFER',
+                'TRANSFORM_FEEDBACK_BUFFER',
+                'UNIFORM_BUFFER'
+            ],
+            getBufferParameter: [
+                'ARRAY_BUFFER',
+                'COPY_READ_BUFFER',
+                'COPY_WRITE_BUFFER',
+                'ELEMENT_ARRAY_BUFFER',
+                'PIXEL_PACK_BUFFER',
+                'PIXEL_UNPACK_BUFFER',
+                'TRANSFORM_FEEDBACK_BUFFER',
+                'UNIFORM_BUFFER'
+            ],
+            vertexAttribPointer: [
+                'ARRAY_BUFFER'
+            ],
+            drawElements: [
+                'ELEMENT_ARRAY_BUFFER'
+            ],
+            drawElementsInstanced: [
+                'ELEMENT_ARRAY_BUFFER'
+            ],
+            drawRangeElements: [
+                'ELEMENT_ARRAY_BUFFER'
+            ],
+            readPixels: [
+                'PIXEL_PACK_BUFFER'
+            ],
+            compressedTexImage2D: [
+                'PIXEL_UNPACK_BUFFER',
+                'TEXTURE_2D'
+            ],
+            compressedTexImage3D: [
+                'PIXEL_UNPACK_BUFFER',
+                'TEXTURE_3D',
+                'TEXTURE_2D_ARRAY'
+            ],
+            compressedTexSubImage2D: [
+                'PIXEL_UNPACK_BUFFER',
+                'TEXTURE_2D'
+            ],
+            compressedTexSubImage3D: [
+                'PIXEL_UNPACK_BUFFER',
+                'TEXTURE_3D',
+                'TEXTURE_2D_ARRAY'
+            ],
+            texImage2D: [
+                'PIXEL_UNPACK_BUFFER',
+                'TEXTURE_2D',
+                'TEXTURE_CUBE_MAP'
+            ],
+            texImage3D: [
+                'PIXEL_UNPACK_BUFFER',
+                'TEXTURE_3D',
+                'TEXTURE_2D_ARRAY'
+            ],
+            texSubImage2D: [
+                'PIXEL_UNPACK_BUFFER',
+                'TEXTURE_2D'
+            ],
+            texSubImage3D: [
+                'PIXEL_UNPACK_BUFFER',
+                'TEXTURE_3D',
+                'TEXTURE_2D_ARRAY'
+            ],
+            bindBufferBase: [
+                'TRANSFORM_FEEDBACK_BUFFER',
+                'UNIFORM_BUFFER'
+            ],
+            bindBufferRange: [
+                'TRANSFORM_FEEDBACK_BUFFER',
+                'UNIFORM_BUFFER'
+            ],
+            framebufferTexture2D: [
+                'GL_FRAMEBUFFER',
+                'READ_FRAMEBUFFER',
+                'DRAW_FRAMEBUFFER',
+                'TEXTURE_2D'
+            ],
+            bindFramebuffer: [
+                'READ_FRAMEBUFFER',
+                'DRAW_FRAMEBUFFER'
+            ],
+            checkFramebufferStatus: [
+                'READ_FRAMEBUFFER',
+                'DRAW_FRAMEBUFFER'
+            ],
+            framebufferRenderbuffer: [
+                'READ_FRAMEBUFFER',
+                'DRAW_FRAMEBUFFER',
+                'RENDERBUFFER'
+            ],
+            framebufferTextureLayer: [
+                'READ_FRAMEBUFFER',
+                'DRAW_FRAMEBUFFER'
+            ],
+            invalidateFramebuffer: [
+                'READ_FRAMEBUFFER',
+                'DRAW_FRAMEBUFFER'
+            ],
+            invalidateSubFramebuffer: [
+                'READ_FRAMEBUFFER',
+                'DRAW_FRAMEBUFFER'
+            ],
+            bindRenderbuffer: [
+                'RENDERBUFFER'
+            ],
+            renderbufferStorage: [
+                'RENDERBUFFER'
+            ],
+            renderbufferStorageMultisample: [
+                'RENDERBUFFER'
+            ],
+            bindTexture: [
+                'TEXTURE_2D',
+                'TEXTURE_3D',
+                'TEXTURE_2D_ARRAY',
+                'TEXTURE_CUBE_MAP'
+            ],
+            copyTexImage2D: [
+                'TEXTURE_2D'
+            ],
+            copyTexSubImage2D: [
+                'TEXTURE_2D'
+            ],
+            generateMipmap: [
+                'TEXTURE_2D',
+                'TEXTURE_3D',
+                'TEXTURE_2D_ARRAY',
+                'TEXTURE_CUBE_MAP'
+            ],
+            getTexParameter: [
+                'TEXTURE_2D',
+                'TEXTURE_3D',
+                'TEXTURE_2D_ARRAY',
+                'TEXTURE_CUBE_MAP'
+            ],
+            texStorage2D: [
+                'TEXTURE_2D',
+                'TEXTURE_CUBE_MAP'
+            ],
+            copyTexSubImage3D: [
+                'TEXTURE_3D',
+                'TEXTURE_2D_ARRAY'
+            ],
+            texStorage3D: [
+                'TEXTURE_3D',
+                'TEXTURE_2D_ARRAY'
+            ],
+            bindTransformFeedback: [
+                'TRANSFORM_FEEDBACK'
+            ]
+        };
+
+        const funcsByTarget = {};
+        for (func of Object.keys(targetsByFunc)) {
+            for (target of targetsByFunc[func]) {
+                funcsByTarget[target] = funcsByTarget[target] ?? [];
+                funcsByTarget[target].push(func);
+            }
+        }
+
+        {
+            const container = document.createElement('div');
+            container.className = 'container target-list';
+            document.body.appendChild(container);
+            
+            const title1 = document.createElement('h1');
+            title1.innerText = 'WebGL targets and their associated functions';
+            container.appendChild(title1);
+            
+            for (key of Object.keys(funcsByTarget)) {
+                const section = document.createElement('div');
+                container.appendChild(section);
+                
+                const h2 = document.createElement('h2');
+                h2.innerText = key;
+                section.appendChild(h2);
+                const ul = document.createElement('ul');
+                section.appendChild(ul)
+                
+                for (func of funcsByTarget[key]) {
+                    const li = document.createElement('li');
+                    li.classList.add(key)
+                    li.innerText = func;
+                    ul.appendChild(li);
+                }
+                if (funcsByTarget[key].length === 0) {
+                    const li = document.createElement('li');
+                    li.innerText = '[NONE]';
+                    ul.appendChild(li);
+                    
+                }
+            }
+        }
+
+        {
+            const container = document.createElement('div');
+            container.className = 'container function-list';
+            document.body.appendChild(container);
+
+
+            const title = document.createElement('h1');
+            title.innerText = 'WebGL functions and their associated targets';
+            container.appendChild(title);
+            
+            for (key of Object.keys(targetsByFunc)) {
+                const section = document.createElement('div');
+                container.appendChild(section);
+                
+                const h2 = document.createElement('h2');
+                h2.innerText = key;
+                section.appendChild(h2);
+                const ul = document.createElement('ul');
+                section.appendChild(ul)
+                
+                for (func of targetsByFunc[key]) {
+                    const li = document.createElement('li');
+                    li.classList.add(func)
+                    li.innerText = func;
+                    ul.appendChild(li);
+                }
+                if (targetsByFunc[key].length === 0) {
+                    const li = document.createElement('li');
+                    li.innerText = '[NONE]';
+                    ul.appendChild(li);
+                    
+                }
+            }
+        }
+    </script>
+</body>
+</html>
