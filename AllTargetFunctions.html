@@ -38,6 +38,9 @@
         h2 {
             font-size: 1.2em;
         }
+        h2.special, span.special {
+            color: #cc0000;
+        }
 
         ul {
             margin-bottom: 1em;
@@ -45,7 +48,7 @@
 
         li {
             display: inline-block;
-            border: 1px solid #666;
+            border: 3px solid #dddddd88;
             position: relative;
             width: auto;
             margin: .25em .25em .25em 0;
@@ -129,9 +132,13 @@
             background-color: rgb(177, 175, 196);
             color: #000;
         }
+        li.special {
+            border: 3px solid red; 
+        }
     </style>
 </head>
 <body>
+    <div>(<span class="special">Functions in red</span> require a certain object to be bound to one of its specified targets or they will throw an error.)</div>
     <script>
         const targetsByFunc = {
             bindBuffer: [
@@ -324,9 +331,16 @@
                 'TRANSFORM_FEEDBACK'
             ]
         };
+        const hiddenTargetFunctions = [
+            'vertexAttribPointer',
+            'drawElements',
+            'drawElementsInstanced',
+            'drawRangeElements',
+            'readPixels',
+        ];
 
         const funcsByTarget = {};
-        for (func of Object.keys(targetsByFunc)) {
+        for (func of Object.keys(targetsByFunc).sort()) {
             for (target of targetsByFunc[func]) {
                 funcsByTarget[target] = funcsByTarget[target] ?? [];
                 funcsByTarget[target].push(func);
@@ -355,6 +369,7 @@
                 for (func of funcsByTarget[key]) {
                     const li = document.createElement('li');
                     li.classList.add(key)
+                    if (hiddenTargetFunctions.includes(func)) li.classList.add('special')
                     li.innerText = func;
                     ul.appendChild(li);
                 }
@@ -383,10 +398,11 @@
                 
                 const h2 = document.createElement('h2');
                 h2.innerText = key;
+                if (hiddenTargetFunctions.includes(key)) h2.classList.add('special');
                 section.appendChild(h2);
                 const ul = document.createElement('ul');
                 section.appendChild(ul)
-                
+
                 for (func of targetsByFunc[key]) {
                     const li = document.createElement('li');
                     li.classList.add(func)
