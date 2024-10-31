@@ -553,7 +553,7 @@ const quad = createQuadProgram();
 
 
 // MVP matrix uniforms are used by the geometry program to orient the camera
-initializeMVPMatrices(geometry.program);
+initializeMVPMatrices();
 
 
 // Lights are fragment shader uniforms used for the lighting calculations
