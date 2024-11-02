@@ -1,4 +1,14 @@
+// Important! 
+// You must load `gl-matrix` for this script to work. You have two options:
+
+// Option A. If you are using a build system:
 import { mat4, vec3 } from 'gl-matrix';
+
+// // Option B. If you are not using a build system: 
+// //  1. add a script tag to your HTML file and load gl-matrix.js anywhere on your page but before this JS file (https://glmatrix.net/)
+// //  2. comment out the import line above
+// //  3. uncomment the line below
+// const { mat4, vec3 } = glMatrix;
 
 const createWebGLProgram = (gl, vs, fs) => {
     const program = gl.createProgram();
@@ -511,21 +521,25 @@ const createLights = (program) => {
 };
 
 const createFramebufferObject = (program) => {
+	const SAMPLES_PER_PIXEL = Math.min(4, gl.getParameter(gl.MAX_SAMPLES));
+	const WIDTH = 480;
+	const HEIGHT = 480;
+	
 	// 1. Multisample framebuffer
 	// 1a. multisample renderbuffer for normal data
 	const normalRenderbufferMSAA = gl.createRenderbuffer();
 	gl.bindRenderbuffer(gl.RENDERBUFFER, normalRenderbufferMSAA);
-	gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 4, gl.RGBA16F, 480,480);
+	gl.renderbufferStorageMultisample(gl.RENDERBUFFER, SAMPLES_PER_PIXEL, gl.RGBA16F, WIDTH,HEIGHT);
 
 	// 1b. multisample renderbuffer for position data 
 	const positionRenderbufferMSAA = gl.createRenderbuffer();
 	gl.bindRenderbuffer(gl.RENDERBUFFER, positionRenderbufferMSAA);
-	gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 4, gl.RGBA16F, 480,480);
+	gl.renderbufferStorageMultisample(gl.RENDERBUFFER, SAMPLES_PER_PIXEL, gl.RGBA16F, WIDTH,HEIGHT);
 
 	// 1c. multisample depth buffer
 	const depthRenderbufferMSAA = gl.createRenderbuffer();
 	gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderbufferMSAA);
-	gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 4, gl.DEPTH_COMPONENT16, 480,480);
+	gl.renderbufferStorageMultisample(gl.RENDERBUFFER, SAMPLES_PER_PIXEL, gl.DEPTH_COMPONENT16, WIDTH,HEIGHT);
 
 	const fboMSAA = gl.createFramebuffer();
 	gl.bindFramebuffer(gl.FRAMEBUFFER, fboMSAA);
@@ -539,21 +553,21 @@ const createFramebufferObject = (program) => {
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
 	// 2. Regular Framebuffer object with textures
-	const normalTexture = gl.createTexture();
-	gl.activeTexture(gl.TEXTURE1);
-	gl.bindTexture(gl.TEXTURE_2D, normalTexture);
-	gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA16F, 480,480);
-
 	const positionTexture = gl.createTexture();
 	gl.activeTexture(gl.TEXTURE0);
 	gl.bindTexture(gl.TEXTURE_2D, positionTexture);
-	gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA16F, 480,480);
+	gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA16F, WIDTH,HEIGHT);
+
+	const normalTexture = gl.createTexture();
+	gl.activeTexture(gl.TEXTURE1);
+	gl.bindTexture(gl.TEXTURE_2D, normalTexture);
+	gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA16F, WIDTH,HEIGHT);
 
 	// Previously, the depth buffer was part of this FBO. Now, the texture data will be sent here via blitting. So we don't
 	// need a depth buffer since we don't be doing depth testing.
 	// const depthRenderbuffer = gl.createRenderbuffer();
 	// gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderbuffer);
-	// gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, 480,480);
+	// gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, WIDTH,HEIGHT);
 
 	const fbo = gl.createFramebuffer();
 	gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
