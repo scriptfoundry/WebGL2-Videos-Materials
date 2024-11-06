@@ -146,7 +146,7 @@ const createProgram = (gl, vs, fs) => {
 };
 
 // Step 2: Create the triangle program and configure its buffers
-const triangleVerexShaderSource =
+const triangleVertexShaderSource =
 	`#version 300 es
 	#pragma vscode_glsllint_stage: vert
 
@@ -176,7 +176,7 @@ const triangleFragmentShaderSource =
 		fragColor = vColor;
 	}`;
 
-const triangleProgram = createProgram(gl, triangleVerexShaderSource, triangleFragmentShaderSource);
+const triangleProgram = createProgram(gl, triangleVertexShaderSource, triangleFragmentShaderSource);
 
 const triangleData = new Float32Array([
     // Pos (xyz)          // Color (rgb)
